@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using Rigid.Services;
 using System.Threading.Tasks;
 namespace Rigid.Controllers
 {
@@ -31,6 +32,7 @@ namespace Rigid.Controllers
 
     public class LoginRequest
     {
-        public string Username { get; set;}
-        public string Password { get; set;}
+        public string Username { get; set; }
+        public string Password { get; set; }
+    }
 }
