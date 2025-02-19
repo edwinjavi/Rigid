@@ -30,6 +30,8 @@ namespace Rigid.Controllers
         }
     }
 
+    //test
+
     public class LoginRequest
     {
         public string Username { get; set; }
