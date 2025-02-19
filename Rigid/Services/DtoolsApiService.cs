@@ -2,23 +2,61 @@
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-
-//Consume el servicio de la API
+using Rigid.Models;
+using System.Collections.Generic;
 
 namespace Rigid.Services
 {
-    public class DtoolsApiService
+
+    //modificacion para que se use la interfaz IDtoolsApiService
+    public class DtoolsApiService : IDtoolsApiService
     {
         private readonly HttpClient _httpClient;
-        private readonly string _apiUrl;
+        private readonly string _apiUrl = "https://api.dtools.com"; // Define la URL bien, ya que es un valor constante es mejor setearlo aqui en ves de pasarlo como constructor
 
-        public DtoolsApiService(HttpClient httpClient, string apiUrl)
+        public DtoolsApiService(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _apiUrl = apiUrl;
+            //Se comento por las razones de arriba _apiUrl = "https://api.dtools.com";
+
         }
 
-        public async Task<T> GetDataAsync<T>(string endpoint, string token)
+        //Billing, Documentation y Licenses
+
+        public async Task<List<Billing>> GetBillingAsync(string token)
+        {
+            return await GetDataAsync<List<Billing>>("billing", token);
+        }
+
+        public async Task PostBillingAsync(Billing billing, string token)
+        {
+            await PostDataAsync("billing", billing, token);
+        }
+
+        public async Task<List<License>> GetLicensesAsync(string token)
+        {
+            return await GetDataAsync<List<License>>("licenses", token);
+        }
+
+        public async Task PostLicenseAsync(License license, string token)
+        {
+            await PostDataAsync("licenses", license, token);
+        }
+
+        public async Task<List<Document>> GetDocumentsAsync(string token)
+        {
+            return await GetDataAsync<List<Document>>("documents", token);
+        }
+
+        public async Task PostDocumentAsync(Document document, string token)
+        {
+            await PostDataAsync("documents", document, token);
+        }
+
+
+        //Codigo que estaba antes (No tocado)
+
+        private async Task<T> GetDataAsync<T>(string endpoint, string token)
         {
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             var response = await _httpClient.GetAsync($"{_apiUrl}/{endpoint}");
@@ -31,7 +69,7 @@ namespace Rigid.Services
             throw new Exception("Error al obtener datos.");
         }
 
-        public async Task PostDataAsync(string endpoint, object data, string token)
+        private async Task PostDataAsync(string endpoint, object data, string token)
         {
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             var content = new StringContent(JsonSerializer.Serialize(data),
@@ -40,7 +78,7 @@ namespace Rigid.Services
 
             var response = await _httpClient.PostAsync($"{_apiUrl}/{endpoint}/data", content);
 
-            if (response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
                 throw new Exception("Error al enviar datos.");
             }
