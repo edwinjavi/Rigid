@@ -27,7 +27,8 @@ namespace Rigid.Services
 
             var content = new StringContent(
                 JsonSerializer.Serialize(loginData),
-                Encoding.UTF8, "application/json"
+                Encoding.UTF8, 
+                "application/json"
                 );
 
             var response = await _httpClient.PostAsync($"{_apiUrl}/auth/login", content);
