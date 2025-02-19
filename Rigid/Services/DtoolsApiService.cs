@@ -55,6 +55,7 @@ namespace Rigid.Services
 
 
         //Codigo que estaba antes (No tocado)
+        //Metodos para obtener y enviar datos de la API
 
         private async Task<T> GetDataAsync<T>(string endpoint, string token)
         {

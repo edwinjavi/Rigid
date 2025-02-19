@@ -8,6 +8,8 @@ namespace Rigid.Services
     {
 
         //INTERFAZ DE LA API DE DTOOLS
+
+        //Metodos para obtener y registrar facturas, licencias y documentos
         Task<List<Billing>> GetBillingAsync(string token);
         Task PostBillingAsync(Billing billing, string token);
         Task<List<License>> GetLicensesAsync(string token);
