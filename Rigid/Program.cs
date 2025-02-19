@@ -1,10 +1,14 @@
+using Rigid.Models;
 using Rigid.Services;
-using System.Text;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Registrar configuración
+builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
 
 // Registrar servicios personalizados
 builder.Services.AddSingleton<AuthService>();
@@ -12,10 +16,19 @@ builder.Services.AddSingleton<AuthService>();
 // Configurar HttpClient para AuthService
 builder.Services.AddHttpClient<AuthService>(client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:DtoolsApiKey"]);
+    var apiSettings = builder.Configuration.GetSection("ApiSettings");
+    var dtoolsApiKey = apiSettings["DtoolsApiKey"];
+    if (string.IsNullOrEmpty(dtoolsApiKey))
+    {
+        throw new InvalidOperationException("La clave ApiSettings:DtoolsApiKey no está configurada en appsettings.json.");
+    }
+    client.BaseAddress = new Uri(dtoolsApiKey);
 });
 
-// Por si se necesita acceder desde un frontend externo)
+// Configurar HttpClient para DtoolsApiService
+builder.Services.AddHttpClient<IDtoolsApiService, DtoolsApiService>();
+
+// Habilitar CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", builder =>
@@ -26,10 +39,6 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Configurar HttpClient para DtoolsApiService
-builder.Services.AddHttpClient<IDtoolsApiService, DtoolsApiService>();
-
-
 var app = builder.Build();
 
 // Configurar middleware
@@ -39,25 +48,15 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
 
 // Habilitar CORS
 app.UseCors("AllowAll");
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
-}
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
-
-//Autenticación y autorización
-app.UseAuthorization();
+// Autenticación y autorización
 app.UseAuthentication();
+app.UseAuthorization();
 
 // Configurar las rutas de los controladores
 app.MapControllerRoute(

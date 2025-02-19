@@ -2,6 +2,8 @@
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using Rigid.Models;
 
 namespace Rigid.Services
 {
@@ -10,10 +12,10 @@ namespace Rigid.Services
         private readonly HttpClient _httpClient;
         private readonly string _apiUrl;
 
-        public AuthService(HttpClient httpClient, string apiUrl)
+        public AuthService(HttpClient httpClient, IOptions<ApiSettings> apiSettings)
         {
-            _httpClient = httpClient;
-            _apiUrl = apiUrl;
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            _apiUrl = apiSettings?.Value?.DtoolsApiKey ?? throw new ArgumentNullException(nameof(apiSettings));
         }
 
         //Token de autenticación
