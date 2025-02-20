@@ -2,12 +2,24 @@
 {
     public class License
     {
-        public int Id { get; set; }
-        public string LicenseKey { get; set; }
-        public string Product { get; set; }
-        public string Customer { get; set; }
-        public string Location { get; set; }
-        public DateTime ExpirationDate { get; set; }
-        public bool IsActive { get; set; }
+
+        //Cambiamos el mapeo para parecer a ServiceContracts
+        public string Id { get; set; }   // id del contrato de servicio
+        public string ClientId { get; set; }
+        public string ClientName { get; set; }
+        public string ClientNumber { get; set; }
+        public string ProjectId { get; set; }
+        public string ProjectName { get; set; }
+        public string ProjectNumber { get; set; }
+        public string Name { get; set; }
+        public string Number { get; set; }
+        public string Status { get; set; }
+        public decimal PricePerMonth { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public DateTime PaymentDueDate { get; set; }
+        public DateTime CanceledDate { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime ModifiedDate { get; set; }
     }
 }

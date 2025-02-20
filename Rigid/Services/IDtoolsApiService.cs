@@ -6,15 +6,11 @@ namespace Rigid.Services
 {
     public interface IDtoolsApiService
     {
-
-        //INTERFAZ DE LA API DE DTOOLS
-
-        //Metodos para obtener y registrar facturas, licencias y documentos
-        Task<List<Billing>> GetBillingAsync(string token);
+        // Métodos para obtener y registrar facturas, licencias y documentos
+        Task<List<Billing>> GetBillingAsync(string token, string search = null, int page = 1, int pageSize = 20);
         Task PostBillingAsync(Billing billing, string token);
-        Task<List<License>> GetLicensesAsync(string token);
-        Task PostLicenseAsync(License license, string token);
-        Task<List<Document>> GetDocumentsAsync(string token);
-        Task PostDocumentAsync(Document document, string token);
+        Task<List<License>> GetLicensesAsync(string token, string search = null, int page = 1, int pageSize = 20);
+        Task<Document> GetFileAsync(string id, string token); // Método para obtener un archivo específico
+
     }
 }

@@ -5,75 +5,52 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 
 [ApiController]
-[Route("api/dtools")] 
+[Route("api/dtools")]
 public class DtoolsController : ControllerBase
 {
     private readonly IDtoolsApiService _dtoolsApiService;
 
-
-    //Inyeccion de la interfaz 
+    // Inyección de la interfaz
     public DtoolsController(IDtoolsApiService dtoolsApiService)
     {
         _dtoolsApiService = dtoolsApiService;
     }
 
-    //Endpoints 
-    //Endpoint para obtener los datos de la facturacion 
-
+    // Endpoint para obtener facturación PurchaseOrders
     [HttpGet("billing")]
-    public async Task<IActionResult> GetBilling([FromHeader] string authorization)
+    public async Task<IActionResult> GetBilling(
+        [FromHeader] string authorization,
+        [FromQuery] string search = null,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20)
     {
         var token = authorization.Replace("Bearer ", "");
-        var billingData = await _dtoolsApiService.GetBillingAsync(token);
+        var billingData = await _dtoolsApiService.GetBillingAsync(token, search, page, pageSize);
         return Ok(billingData);
     }
 
-
-    //Endpoint para registrar los datos de la facturacion 
-
-    [HttpPost("billing")]
-    public async Task<IActionResult> PostBilling([FromBody] Billing billing, [FromHeader] string authorization)
-    {
-        var token = authorization.Replace("Bearer ", "");
-        await _dtoolsApiService.PostBillingAsync(billing, token);
-        return CreatedAtAction(nameof(GetBilling), new { id = billing.Id }, billing);
-    }
-
-    // Endpoint para obtener licencias
-
+    // 🔹 Endpoint para obtener licencias GetServiceContracts
     [HttpGet("licenses")]
-    public async Task<IActionResult> GetLicenses([FromHeader] string authorization)
+    public async Task<IActionResult> GetLicenses(
+        [FromHeader] string authorization,
+        [FromQuery] string search = null,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20)
     {
         var token = authorization.Replace("Bearer ", "");
-        var licenses = await _dtoolsApiService.GetLicensesAsync(token);
+        var licenses = await _dtoolsApiService.GetLicensesAsync(token, search, page, pageSize);
         return Ok(licenses);
     }
-    // Endpoint para registrar licencias
 
-    [HttpPost("licenses")]
-    public async Task<IActionResult> PostLicense([FromBody] License license, [FromHeader] string authorization)
+
+    // 🔹 Endpoint para documentos GetFiles
+    [HttpGet("documents/{id}")]
+    public async Task<IActionResult> GetFile(string id, [FromHeader] string authorization)
     {
         var token = authorization.Replace("Bearer ", "");
-        await _dtoolsApiService.PostLicenseAsync(license, token);
-        return CreatedAtAction(nameof(GetLicenses), new { id = license.Id }, license);
+        var file = await _dtoolsApiService.GetFileAsync(id, token);
+        return Ok(file);
     }
 
-    // Endpoint para obtener documentos
 
-    [HttpGet("documents")]
-    public async Task<IActionResult> GetDocuments([FromHeader] string authorization)
-    {
-        var token = authorization.Replace("Bearer ", "");
-        var documents = await _dtoolsApiService.GetDocumentsAsync(token);
-        return Ok(documents);
-    }
-    // Endpoint para registrar documentos
-
-    [HttpPost("documents")]
-    public async Task<IActionResult> PostDocument([FromBody] Document document, [FromHeader] string authorization)
-    {
-        var token = authorization.Replace("Bearer ", "");
-        await _dtoolsApiService.PostDocumentAsync(document, token);
-        return CreatedAtAction(nameof(GetDocuments), new { id = document.Id }, document);
-    }
 }
